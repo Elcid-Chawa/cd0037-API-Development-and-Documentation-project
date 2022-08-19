@@ -176,6 +176,7 @@ The errors return a json object of the form
         "error":404,
         "message": "Error: Resource not foud"
     }
+```
 
 ## Deployments
 - No dployment exist for this API at the moment
