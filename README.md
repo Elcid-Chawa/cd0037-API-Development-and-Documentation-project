@@ -14,36 +14,174 @@ That's where you come in! Help them finish the trivia app so they can start hold
 
 Completing this trivia app will give you the ability to structure plan, implement, and test an API - skills essential for enabling your future applications to communicate with others.
 
-## Starting and Submitting the Project
+## Getting Started
 
-[Fork](https://help.github.com/en/articles/fork-a-repo) the project repository and [clone](https://help.github.com/en/articles/cloning-a-repository) your forked repository to your machine. Work on the project locally and make sure to push all your changes to the remote repository before submitting the link to your repository in the Classroom.
+You can have acces to the project files by [Forking](https://help.github.com/en/articles/fork-a-repo) the [project repository](https://github.com/Elcid-Chawa/cd0037-API-Development-and-Documentation-project) and [clone](https://help.github.com/en/articles/cloning-a-repository) your forked repository to your machine. You will run the project locally on your system.
 
-## About the Stack
+### Pre-requisit and Local Developement
+- Make sure you have a posgresql server running in your machine on port 5432
+- Have python 3.7 or higher installed on your machine and install virtualenv with the command
+```
+pip install virtualenv
+```
+- install node 12.13 or higher
 
-We started the full stack application for you. It is designed with some key functional areas:
 
 ### Backend
 
-The [backend](./backend/README.md) directory contains a partially completed Flask and SQLAlchemy server. You will work primarily in `__init__.py` to define your endpoints and can reference models.py for DB and SQLAlchemy setup. These are the files you'd want to edit in the backend:
+The [backend](./backend/README.md) directory contains the files to run the API using the falsk server. 
 
-1. `backend/flaskr/__init__.py`
-2. `backend/test_flaskr.py`
+- To run the backend:
+     - create a virtualenv with python 3.7 and activate it
+     ```
+     virtualenv venv --python=3.7
+     source venv/bin/activate
+     ```
+     - navigate to the backend directory (if you are stil in the root directory) and install the project dependencies
+    ```
+    cd ./backend
+    pip install -r requrements.txt
+    ```
+    - The file where endpoints are defined is found in  `backend/flaskr/__init__.py`
 
-> View the [Backend README](./backend/README.md) for more details.
+> View the [Backend README](./backend/README.md) for more details in running and testing the backend.
 
 ### Frontend
 
-The [frontend](./frontend/README.md) directory contains a complete React frontend to consume the data from the Flask server. If you have prior experience building a frontend application, you should feel free to edit the endpoints as you see fit for the backend you design. If you do not have prior experience building a frontend application, you should read through the frontend code before starting and make notes regarding:
+The [frontend](./frontend/README.md) directory contains a complete React frontend to consume the data from the Flask server. 
+- To run the frontend:
+    - navigate to the frontend directory
+    - install the node dependencies
+    ```
+    npm i
+    ```
+    - start the frontend application
+    ```
+    npm start
+    ```
 
-1. What are the end points and HTTP methods the frontend is expecting to consume?
-2. How are the requests from the frontend formatted? Are they expecting certain parameters or payloads?
+- Sample: http://localhost:3000
+!["frontend"](endpoint_screenshots/frontend.png)
 
-Pay special attention to what data the frontend is expecting from each API response to help guide how you format your API. The places where you may change the frontend behavior, and where you should be looking for the above information, are marked with `TODO`. These are the files you'd want to edit in the frontend:
-
-1. `frontend/src/components/QuestionView.js`
-2. `frontend/src/components/FormView.js`
-3. `frontend/src/components/QuizView.js`
-
-By making notes ahead of time, you will practice the core skill of being able to read and understand code and will have a simple plan to follow to build out the endpoints of your backend API.
 
 > View the [Frontend README](./frontend/README.md) for more details.
+
+## API Reterence
+
+- The base URL for this API is `http://127.0.0.1:5000`, when running the backend locally on your computer.
+- The API is open and would not be needing any athentication to access its endpoints
+
+## Enpoints
+Below is an illustration of the endpoints for this API and how thwy can be accessed
+
+#### GET /categories 
+- General:
+    - This endpoint returns all the diferent questions categories from the database
+    - It aslo sends a success status of True when it is run success fully
+- Sample: http://127.0.01:5000/categories
+
+- results from postman:
+
+!["get categoriers"](endpoint_screenshots/get_categories.png)
+
+#### GET /questions 
+- General:
+    - This endpoint returns all the questions from the database
+    - It aslo sends a success status of True when it is run success fully
+    - It also returns a list of categories, total number of questions and current category id
+    - This endpoint also supports pagination. It defaults to page 1 at initial run.
+- Sample: 
+    - http://127.0.01:5000/questions
+    - with pagination: http://127.0.0.1:5000/questions?page=2
+
+- results from postman:
+
+!["get questions"](endpoint_screenshots/get_questions.png)
+
+#### DELETE /questions/{q_id }
+- General:
+    - This endpoint is called to delete a question by id
+    - It aslo sends a success status of True when it is run success fully
+- Sample: http://127.0.01:5000/questions/4
+
+- results from postman:
+
+!["delete question"](endpoint_screenshots/delete_question.png)
+
+#### POST /questions
+- General:
+    - This endpoint is called to create a new questions in the databse
+    - It takes a body query in json format and use it to create a question object 
+    - body query includes fro example: 
+    ```json
+        { 
+            "question":"the question", 
+            "answer":"the answer",
+            "difficulty": 1,
+            "category": 1
+        }
+    ```
+- Sample: http://127.0.01:5000/questions/4
+
+- results from postman:
+
+!["add question"](endpoint_screenshots/add_question.png)
+
+#### POST /search
+- General:
+    - This endpoint searches for a question based on an input string
+    - it accepts a body query incldung the search string
+    - example:
+    ```json
+        {
+            "searchTerm":"How"
+        }
+    ```
+- Sample: http://127.0.01:5000/search
+
+- results from postman:
+
+!["search question"](endpoint_screenshots/search_question.png)
+
+#### GET /categories/{cid}/questions
+- General:
+    - This endpoint is called to get questions based on a certain category
+    - It parses the category id as a parameter (`cid`) and returns all questions under that category
+- Sample: http://127.0.01:5000/categories/4/questions
+
+- results from postman:
+
+!["question category"](endpoint_screenshots/question_category.png)
+
+#### POST /quizzes
+- General:
+    - This endpoint to play the Trvia game
+    - It accepts a body query that returns a random questions based on the categroy of previous questions and can also pick a random questions if no previous question or category is found.
+- Sample: http://127.0.01:5000/quizzes
+
+- results from postman:
+
+!["quiz"](endpoint_screenshots/play_quizzez.png)
+
+## Error Handling
+
+I case the endpoints fail at any point, there is an error handler that captures the error and prevents the backend from crashing.
+
+- our application handles the errors: 404, 405, 433 and 500
+
+The errors return a json object of the form
+```json
+    {
+        "success"::False,
+        "error":404,
+        "message": "Error: Resource not foud"
+    }
+
+## Deployments
+- No dployment exist for this API at the moment
+
+Authors:
+- Elcid Chawa
+
+Acknowlegements
+- I acknowlege that the boiler plate for this project was designed by Udacity in partial completion of the FullStack Web Developer Nano Degree course.
