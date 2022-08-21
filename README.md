@@ -179,7 +179,7 @@ The errors return a json object of the form
 ```
 
 ## Deployments
-- No dployment exist for this API at the moment
+- No dployment exist for this API at the moment.
 
 Authors:
 - Elcid Chawa

@@ -37,6 +37,7 @@ def create_app(test_config=None):
         response.headers.add("Acces-Control-Allow-Headers", "Content-Type, Authorization")
         response.headers.add("Allow-Control-Allow-Headers", "GET, POST, PATCH, DELETE, OPTIONS")
         return response
+
     """
     @TODO:
     Create an endpoint to handle GET requests
