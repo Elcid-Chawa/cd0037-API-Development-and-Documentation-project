@@ -15,8 +15,11 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_name = "trivia_test"
-        self.database_path = "postgresql://postgres:postgres@{}/{}".format('localhost:5432', self.database_name)
+        self.DB_HOST = os.getenv('DB_HOST', '127.0.0.1:5432')
+        self.DB_USER = os.getenv('DB_USER', 'postgres')
+        self.DB_PASSWORD = os.getenv('DB_PASSWORD', 'postgres')
+        self.database_name = os.getenv('DB_NAME', 'trivia_test')
+        self.database_path = "postgresql://{}:{}@{}/{}".format(self.DB_USER, self.DB_PASSWORD, self.DB_HOST, self.database_name)
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -38,7 +41,13 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get("/categories")
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(data["success"], True)
+        self.assertEqual(data["success"], True)\
+    
+    def test_get_categories_error(self):
+        res = self.client().get("/categories/1")
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data["success"], False)
 
     def test_get_questions(self):
         res = self.client().get("/questions")
@@ -46,6 +55,12 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)
         self.assertIsNotNone(data["categories"])
+
+    def test_get_questions_error(self):
+        res = self.client().get("/questions/1")
+        data = json.loads(res.data)
+        self.assertEqual(data["error"], 405)
+        self.assertEqual(data["success"], False)
     
     def test_delete_question(self):
         res = self.client().delete("/questions/11")
@@ -91,12 +106,25 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEquals(res.status_code, 200)
         self.assertTrue(data["success"])
 
+    def test_search_question(self):
+        res = self.client().post("/search", json=({"searchterm":"How"}))
+
+        data = json.loads(res.data)
+        self.assertEqual(data["error"], 500)
+        self.assertFalse(data["success"])
+
     def test_get_categroy_questions(self):
         res = self.client().get("/categories/4/questions")
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data["success"])
         self.assertIsNotNone(data["questions"])
+
+    def test_get_categroy_questions_error(self):
+        res = self.client().get("/categories/7/questions")
+        data = json.loads(res.data)
+        self.assertEqual(data["error"], 422)
+        self.assertFalse(data["success"])
 
     def test_play(self):
         res = self.client().post("/quizzes", json=({
@@ -107,6 +135,17 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data["success"])
+
+    def test_play_error(self):
+        res = self.client().post("/quizzes", json=({
+            "previous_questions": [2,3,4],
+            "quiz_category": []
+        }))
+
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(data["success"])
+        self.assertEqual(data["error"], 422)
 
 
 # Make the tests conveniently executable

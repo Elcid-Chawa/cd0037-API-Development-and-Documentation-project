@@ -84,6 +84,7 @@ def create_app(test_config=None):
             "currentCategory": None,
             "totalQuestions": len(format_questions)
         })
+
     """
     @TODO:
     Create an endpoint to DELETE question using a question ID.
@@ -102,8 +103,10 @@ def create_app(test_config=None):
                 "success": True,
                 "message": f"Question {q_id} has been deleted"
             })
+
         except:
             abort(404)
+
     """
     @TODO:
     Create an endpoint to POST a new question,
@@ -122,7 +125,8 @@ def create_app(test_config=None):
             answer = body["answer"]
             category = body["category"]
             difficulty = body["difficulty"]
-            newQuestion = Question(question=question, answer=answer, category=category, difficulty=difficulty)
+            newQuestion = Question(question=question, answer=answer, 
+                                   category=category, difficulty=difficulty)
 
             newQuestion.insert()
 
@@ -133,6 +137,7 @@ def create_app(test_config=None):
             })
         except:
             abort(422)
+
     """
     @TODO:
     Create a POST endpoint to get questions based on a search term.
@@ -146,9 +151,9 @@ def create_app(test_config=None):
     @app.route("/search", methods=["POST"])
     def search_question():
         searchTerm = request.get_json()
-        search_term = searchTerm["searchTerm"]
 
         try:
+            search_term = searchTerm["searchTerm"]
             question = Question.query.filter(
                 Question.question.ilike(f"%{search_term}%")
             ). all()
@@ -192,6 +197,7 @@ def create_app(test_config=None):
             }), 200
         except:
             abort(422)
+
     """
     @TODO:
     Create a POST endpoint to get questions to play the quiz.
@@ -212,23 +218,29 @@ def create_app(test_config=None):
             category = body["quiz_category"]
             questions = formatted_objects(Question.query.all()) 
             question_category = formatted_objects(
-                                                    Question.query.filter_by(category=category["id"]).all()
-                                                )
-            answered_questions = Question.query.filter(
-                    Question.id.in_(qid for qid in previous_question)
+                                    Question.query
+                                            .filter_by(category=category["id"])
+                                            .all()
+                                        )
+
+            answered_quesions = Question.query.filter(
+                    Question.id.in_((previous_question))
+                    ).all()
+            unanswered_quesions = Question.query.filter(
+                    Question.id.notin_((previous_question))
                     ).all()
 
-
-            if (category["id"] != 0 ) and (previous_question == []):
+            if (category["id"] == 0) and (previous_question == []):
+                question = random.choice(questions)
+            elif (category["id"] != 0) and (previous_question == []):
                 question = random.choice(question_category)
             elif (previous_question != []) and (category["id"] == 0):
-                question = random.choice(questions)
-                if question in formatted_objects(answered_questions):
-                    question = random.choice(question)
+                question = random.choice(formatted_objects(unanswered_quesions))
             else:
-                question = random.choice(questions)
-                if question in formatted_objects(answered_questions):
+                question = random.choice(question_category)
+                if question in formatted_objects(answered_quesions):
                     question = random.choice(question_category)
+        
             return jsonify({
                 "success": True,
                 "question": question
