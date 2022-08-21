@@ -167,7 +167,7 @@ Below is an illustration of the endpoints for this API and how thwy can be acces
 
 I case the endpoints fail at any point, there is an error handler that captures the error and prevents the backend from crashing.
 
-- our application handles the errors: 404, 405, 433 and 500
+- our application handles the errors: 404, 405, 422 and 500
 
 The errors return a json object of the form
 ```json

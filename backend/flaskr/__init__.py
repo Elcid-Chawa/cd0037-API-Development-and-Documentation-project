@@ -183,7 +183,7 @@ def create_app(test_config=None):
             category = Category.query.get(cid)
             formated_cat = category.format()
             category_questions = Question.query.filter(
-                                            Question.category == formated_cat["id"]
+                                        Question.category == formated_cat["id"]
                                         ).all()
             if category_questions is None:
                 abort(404)
