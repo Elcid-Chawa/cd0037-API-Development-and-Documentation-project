@@ -41,7 +41,7 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get("/categories")
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(data["success"], True)\
+        self.assertEqual(data["success"], True)
 
     def test_get_categories_error(self):
         res = self.client().get("/categories/1")
@@ -53,14 +53,14 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get("/questions")
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(data["success"], True)
+        self.assertTrue(data["success"])
         self.assertIsNotNone(data["categories"])
 
     def test_get_questions_error(self):
         res = self.client().get("/questions/1")
         data = json.loads(res.data)
         self.assertEqual(data["error"], 405)
-        self.assertEqual(data["success"], False)
+        self.assertFalse(data["success"])
 
     def test_delete_question(self):
         res = self.client().delete("/questions/10")
