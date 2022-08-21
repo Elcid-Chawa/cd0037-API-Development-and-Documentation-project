@@ -231,6 +231,11 @@ def create_app(test_config=None):
                     Question.id.notin_((previous_question))
                     ).all()
 
+            unanswered_quesion_category = Question.query.filter(
+                    Question.id.notin_((previous_question))
+                    ).filter_by(category = category["id"]) \
+                    .all()
+
             if (category["id"] == 0) and (previous_question == []):
                 question = random.choice(questions)
             elif (category["id"] != 0) and (previous_question == []):
@@ -238,10 +243,8 @@ def create_app(test_config=None):
             elif (previous_question != []) and (category["id"] == 0):
                 question = random.choice(formatted_objects(unanswered_quesions))
             else:
-                question = random.choice(question_category)
-                if question in formatted_objects(answered_quesions):
-                    question = random.choice(question_category)
-        
+                question = random.choice(formatted_objects(unanswered_quesion_category))
+
             return jsonify({
                 "success": True,
                 "question": question
